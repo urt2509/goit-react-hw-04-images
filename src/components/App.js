@@ -120,7 +120,7 @@ class App extends Component {
 }
 
 App.propTypes = {
-  images: PropTypes.arrayOf(PropTypes.object),
+  images: PropTypes.object,
   query: PropTypes.string,
   page: PropTypes.number,
   error: PropTypes.string,

@@ -9,6 +9,10 @@ import { ImSearch } from 'react-icons/im';
 const SearchBar = ({ onSubmit }) => {
   const [searchImage, setSearchImage] = useState('');
 
+  const handleInput = e => {
+    setSearchImage(e.target.value.toLowerCase());
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
 
@@ -20,10 +24,6 @@ const SearchBar = ({ onSubmit }) => {
 
     onSubmit(searchImage);
     setSearchImage('');
-  };
-
-  const handleChange = e => {
-    setSearchImage(e.currenTarget.value.toLowerCase());
   };
 
   return (
@@ -39,52 +39,11 @@ const SearchBar = ({ onSubmit }) => {
           autoComplete="off"
           autoFocus
           placeholder="Search images and photos"
-          onChange={handleChange}
+          onChange={handleInput}
         ></Input>
       </Form>
     </Bar>
   );
-
-  //  handleSubmit = e => {
-  //   const { searchImage } = this.state;
-
-  //   e.preventDefault();
-
-  //   if (searchImage.trim() === '') {
-  //     return Notify.failure('Please enter text for search images', {
-  //       timeout: 1000,
-  //     });
-  //   }
-
-  //   this.props.onSubmit(searchImage);
-  //   this.setState({ searchImage: '' });
-  // };
-
-  // handleChange = e => {
-  //   this.setState({ searchImage: e.currentTarget.value.toLowerCase() });
-  // };
-
-  // render() {
-  //   const { searchImage } = this.state;
-
-  // return (
-  //   <Bar>
-  //     <Form onSubmit={this.handleSubmit}>
-  //       <Button type="submit">
-  //         <ImSearch />
-  //       </Button>
-
-  //       <Input
-  //         type="text"
-  //         value={searchImage}
-  //         autoComplete="off"
-  //         autoFocus
-  //         placeholder="Search images and photos"
-  //         onChange={this.handleChange}
-  //       ></Input>
-  //     </Form>
-  //   </Bar>
-  // );
 };
 
 SearchBar.propTypes = {
