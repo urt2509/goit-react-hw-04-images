@@ -1,131 +1,118 @@
-// import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
-// import { Notify } from 'notiflix';
+import React, { useState, useEffect } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
 
-// import { GlobalStyle } from './GlobalStyle';
-// import { SearchBar } from './Searchbar';
-// import { AppContainer } from './App.styled';
-// import { ImageCallery } from './ImageGallery';
-// import { Loader } from './Loader';
-// import { Button } from './Button';
-// import { Layout } from './Layout';
-// import { getImages } from 'services/APIs';
+import { GlobalStyle } from './GlobalStyle';
+import { SearchBar } from './Searchbar';
+import { AppContainer, ErrorMessage } from './App.styled';
+import { ImageCallery } from './ImageGallery';
+import { Loader } from './Loader';
+import { Button } from './Button';
+import { Layout } from './Layout';
+import { getImages } from 'services/APIs';
 
-// // class App extends Component {
-// //   state = {
-// //     images: [],
-// //     query: '',
-// //     page: 1,
-// //     error: null,
-// //     isLoading: false,
-// //     totalImages: 0,
-// //   };
+const App = () => {
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalImages, setTotalImages] = useState(0);
 
-//   // componentDidUpdate(_, prevState) {
-//   //   if (
-//   //     prevState.query !== this.state.query ||
-//   //     prevState.page !== this.state.page
-//   //   ) {
-//   //     this.fetchImages();
-//   //   }
-//   // }
+  const lastPage = Math.ceil(totalImages / 12);
 
-//   // async fetchImages() {
-//   //   const { query, page } = this.state;
-//   //   const options = { query, page };
+  useEffect(() => {
+    async function fetchImages() {
+      if (query === '') return;
 
-//   //   try {
-//   //     this.setState({ isLoading: true });
+      const options = { query, page };
 
-//   //     const { hits, totalHits } = await getImages(options);
+      try {
+        setIsLoading(prevState => !prevState);
 
-//   //     const nextImages = hits.map(
-//   //       ({ id, webformatURL, tags, largeImageURL }) => ({
-//   //         id,
-//   //         webformatURL,
-//   //         tags,
-//   //         largeImageURL,
-//   //       })
-//   //     );
+        const { hits, totalHits } = await getImages(options);
 
-//   //     if (page === 1) {
-//   //       if (!nextImages.length) {
-//   //         Notify.failure(`There is no result for ${query}`);
-//   //         return;
-//   //       }
+        const nextImages = hits.map(
+          ({ id, webformatURL, tags, largeImageURL }) => ({
+            id,
+            webformatURL,
+            tags,
+            largeImageURL,
+          })
+        );
 
-//   //       this.setState({ images: nextImages, totalImages: totalHits });
-//   //     } else {
-//   //       this.setState(({ images }) => ({
-//   //         images: [...images, ...nextImages],
-//   //       }));
-//   //     }
+        if (page === 1) {
+          if (!nextImages.length) {
+            toast.error(`There is no result for "${query}"`);
+            return;
+          }
 
-//   //     this.checkLastPage({
-//   //       page,
-//   //       totalImages: totalHits,
-//   //     });
-//   //   } catch (error) {
-//   //     this.setState({ error });
-//   //     Notify.failure(error.message);
-//   //   } finally {
-//   //     this.setState({ isLoading: false });
-//   //   }
-//   // }
+          setImages([...nextImages]);
 
-//   // handleSubmit = value => {
-//   //   this.setState({
-//   //     images: [],
-//   //     query: value,
-//   //     page: 1,
-//   //     totalImages: 0,
-//   //   });
-//   // };
+          setTotalImages(totalHits);
 
-//   // handleLoadMore = () => {
-//   //   this.setState(prev => ({ page: prev.page + 1 }));
-//   // };
+          if (page === lastPage) {
+            toast.success(`You have got all images for request ${query}`);
+          }
+        } else {
+          setImages(prevState => [...prevState, ...nextImages]);
+        }
+      } catch (err) {
+        setError(err);
+      } finally {
+        setIsLoading(prevState => !prevState);
+      }
+    }
 
-//   // checkLastPage({ page, totalImages }) {
-//   //   const { query } = this.state;
-//   //   const lastPage = Math.ceil(totalImages / 12);
+    fetchImages();
+  }, [page, query, lastPage]);
 
-//   //   if (page === lastPage) {
-//   //     Notify.success(`You have got all images for request ${query}`);
-//   //   }
-//   // }
+  const handleSubmit = value => {
+    setImages([]);
+    setQuery(value);
+    setPage(1);
+    setTotalImages(0);
+  };
 
-//   render() {
-//     const { images, totalImages, isLoading } = this.state;
+  const handleLoadMore = () => {
+    setPage(prevState => prevState + 1);
+  };
 
-//     const loadMoreVisible =
-//       !isLoading && images.length !== 0 && images.length < totalImages;
+  const loadMoreVisible =
+    !isLoading && images.length !== 0 && images.length < totalImages;
 
-//     return (
-//       <Layout>
-//         <AppContainer>
-//           <GlobalStyle />
+  return (
+    <Layout>
+      <AppContainer>
+        <GlobalStyle />
 
-//           <SearchBar onSubmit={this.handleSubmit} />
+        <SearchBar onSubmit={handleSubmit} />
+        {images.length > 0 && <ImageCallery images={images} />}
 
-//           <ImageCallery images={images} />
+        {error && (
+          <ErrorMessage>
+            Oops, something went wrong... Try again later!
+          </ErrorMessage>
+        )}
 
-//           {loadMoreVisible && <Button onClick={this.handleLoadMore} />}
+        {loadMoreVisible && <Button onClick={handleLoadMore} />}
+        {isLoading && <Loader />}
+        <Toaster
+          toastOptions={{
+            success: {
+              style: {
+                background: 'green',
+              },
+            },
+            error: {
+              style: {
+                background: 'red',
+              },
+            },
+          }}
+        />
+      </AppContainer>
+    </Layout>
+  );
+};
 
-//           {isLoading && <Loader />}
-//         </AppContainer>
-//       </Layout>
-//     );
-//   }
-// }
-
-// App.propTypes = {
-//   images: PropTypes.object,
-//   query: PropTypes.string,
-//   page: PropTypes.number,
-//   error: PropTypes.string,
-//   isLoading: PropTypes.bool,
-//   totalImages: PropTypes.number,
-// };
-
-// export { App };
+export { App };

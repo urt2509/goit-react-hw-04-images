@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Notify } from 'notiflix';
 import PropTypes from 'prop-types';
+import toast from 'react-hot-toast';
 
 import { Bar, Form, Button, Input } from './Searchbar.styled';
 
@@ -17,7 +17,7 @@ const SearchBar = ({ onSubmit }) => {
     e.preventDefault();
 
     if (searchImage.trim() === '') {
-      return Notify.failure('Please enter text for search images', {
+      return toast.error('Please enter text for search images', {
         timeout: 1000,
       });
     }

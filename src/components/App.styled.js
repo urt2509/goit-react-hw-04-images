@@ -7,4 +7,12 @@ const AppContainer = styled.div`
   padding-bottom: 24px;
 `;
 
-export { AppContainer };
+const ErrorMessage = styled.p`
+  margin-top: 25px;
+  text-align: center;
+  color: #0000ff;
+  font-size: 1.42em;
+  font-weight: bold;
+`;
+
+export { AppContainer, ErrorMessage };

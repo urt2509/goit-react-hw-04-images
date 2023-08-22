@@ -20,12 +20,6 @@ const ImageCallery = ({ images }) => {
 };
 
 ImageCallery.propTypes = {
-  // images: PropTypes.shape({
-  //   id: PropTypes.string,
-  //   webformatURL: PropTypes.string,
-  //   tags: PropTypes.string,
-  //   largeImageURL: PropTypes.string,
-  // }),
   key: PropTypes.string,
   imgUrl: PropTypes.string,
   description: PropTypes.string,
