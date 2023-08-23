@@ -17,9 +17,7 @@ const SearchBar = ({ onSubmit }) => {
     e.preventDefault();
 
     if (searchImage.trim() === '') {
-      return toast.error('Please enter text for search images', {
-        timeout: 1000,
-      });
+      return toast.error('Please enter text for search images');
     }
 
     onSubmit(searchImage);
