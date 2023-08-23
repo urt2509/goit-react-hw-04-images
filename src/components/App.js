@@ -100,6 +100,8 @@ const App = () => {
         {loadMoreVisible && <Button onClick={handleLoadMore} />}
         {isLoading && <Loader />}
         <Toaster
+          position="top-right"
+          reverseOrder={true}
           toastOptions={{
             success: {
               style: {
