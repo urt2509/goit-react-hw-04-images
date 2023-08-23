@@ -27,6 +27,7 @@ const App = () => {
       const options = { query, page };
 
       try {
+        setError(false);
         setIsLoading(prevState => !prevState);
 
         const { hits, totalHits } = await getImages(options);
@@ -57,7 +58,9 @@ const App = () => {
           setImages(prevState => [...prevState, ...nextImages]);
         }
       } catch (err) {
-        setError(err);
+        if (err.code !== 'ERR_CANCELED') {
+          setError(err);
+        }
       } finally {
         setIsLoading(prevState => !prevState);
       }
